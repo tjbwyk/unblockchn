@@ -252,8 +252,8 @@ Unblock CHN 路由器命令：
         cls.start_ss_redir()
 
         selected_conf = confs[selected_conf_name]
-        latencty_info = f"（{selected_conf['latency'] * 1000:.0f} ms）" if 'latency' in selected_conf else ""
-        ologger.info(f"切换到了 {selected_conf_name} 代理服务器{latencty_info}")
+        latency_info = f"（{selected_conf['latency'] * 1000:.0f} ms）" if 'latency' in selected_conf else ""
+        ologger.info(f"切换到了 {selected_conf_name} 代理服务器{latency_info}")
 
     @classmethod
     def cmd_check(cls, raw_args):
@@ -772,7 +772,7 @@ Unblock CHN 还原路由器为未配置状态
     @classmethod
     def load_ss_redir_confs(cls):
         """读取 ss-redir 代理服务器（配置文件）"""
-        confs = OrderedDict()
+        confs = []
         for name in os.listdir(SHADOWSOCKS_DIR_PATH):
             if not name.endswith(".json"):
                 continue
@@ -782,7 +782,9 @@ Unblock CHN 还原路由器为未配置状态
             conf_path = os.path.join(SHADOWSOCKS_DIR_PATH, name)
             with open(conf_path, 'r', encoding='utf-8') as f:
                 conf = json.load(f)
-            confs[conf_name] = conf
+            confs.append((conf_name, conf))
+        confs.sort()
+        confs = OrderedDict(confs)
         return confs
 
     @classmethod
